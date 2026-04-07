@@ -30,11 +30,12 @@ jobs:
           # Se hai creato anche news_monitor.py, scommenta la riga sotto
           # python news_monitor.py 
           
-      - name: 🚀 Salva i Risultati
+     - name: 🚀 Salva e Pubblica i Report
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git pull origin main # Scarica eventuali modifiche fatte nel frattempo
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
           git add .
-          git commit -m "Update Intelligence Report" || exit 0
-          git push
+          git commit -m "Aggiornamento Intelligence: $(date)" || echo "Nessuna modifica da salvare"
+          git push origin main
