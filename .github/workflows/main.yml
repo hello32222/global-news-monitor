@@ -1,44 +1,39 @@
-name: Monitor Geopolitico e Radio
+name: Global Intelligence Monitor
 on:
   schedule:
-    - cron: '0 * * * *' # Gira ogni ora
-  workflow_dispatch: # Permette di farlo partire a mano
+    - cron: '0 * * * *' # Ogni ora
+  workflow_dispatch:
 
 jobs:
-  run-all:
+  monitor:
     runs-on: ubuntu-latest
     steps:
-      - name: Prendi il codice
-        uses: actions/checkout@v3
-
-      - name: Installa Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
-
-      - name: Installa Software Radio e AI
+          python-version: '3.10'
+      
+      - name: Install Dependencies
         run: |
           sudo apt-get update && sudo apt-get install -y ffmpeg
           pip install -r requirements.txt
-
-      - name: 📻 CATTURA AUDIO (Twente WebSDR)
-        run: |
-          # Scarichiamo il client
-          curl -L https://raw.githubusercontent.com/hc67/websdr-client/master/websdr-client.py -o websdr_cli.py
-          # Installiamo una libreria specifica che a volte serve per i websocket
-          pip install websocket-client
-          # Proviamo a registrare (Ho cambiato la porta e aggiunto un piccolo ritardo)
-          python websdr_cli.py -s websdr.ewi.utwente.nl -p 8901 -f 6060 -m am -t 20 -o radio_capture.wav
-      - name: 🤖 TRASCRIVI E TRADUCI AUDIO
+          
+      - name: 📻 Scan Radio
+        run: python radio_scanner.py
+        
+      - name: 🤖 AI Translation
         run: python radio_monitor.py
-
-      - name: 📰 AGGIORNA NOTIZIE
-        run: python news_monitor.py
-
-      - name: 🚀 SALVA TUTTO SU GITHUB
+        
+      - name: 📰 News Aggregator
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "Monitor-Bot"
+          # Se hai creato anche news_monitor.py, scommenta la riga sotto
+          # python news_monitor.py 
+          
+      - name: 🚀 Push Results
+        run: |
+          git config --local user.email "bot@github.com"
+          git config --local user.name "Intelligence-Bot"
           git add .
-          git commit -m "Update Report: $(date)" || exit 0
+          git commit -m "New intel update" || exit 0
           git push
