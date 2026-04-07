@@ -1,1 +1,41 @@
+name: Monitor Geopolitico e Radio
+on:
+  schedule:
+    - cron: '0 * * * *' # Gira ogni ora
+  workflow_dispatch: # Permette di farlo partire a mano
 
+jobs:
+  run-all:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prendi il codice
+        uses: actions/checkout@v3
+
+      - name: Installa Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Installa Software Radio e AI
+        run: |
+          sudo apt-get update && sudo apt-get install -y ffmpeg
+          pip install -r requirements.txt
+
+      - name: 📻 CATTURA AUDIO (Twente WebSDR)
+        run: |
+          curl -L https://raw.githubusercontent.com/hc67/websdr-client/master/websdr-client.py -o websdr_cli.py
+          python websdr_cli.py -s websdr.ewi.utwente.nl -p 8901 -f 6060 -m am -t 30 -o radio_capture.wav
+
+      - name: 🤖 TRASCRIVI E TRADUCI AUDIO
+        run: python radio_monitor.py
+
+      - name: 📰 AGGIORNA NOTIZIE
+        run: python news_monitor.py
+
+      - name: 🚀 SALVA TUTTO SU GITHUB
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "Monitor-Bot"
+          git add .
+          git commit -m "Update Report: $(date)" || exit 0
+          git push
