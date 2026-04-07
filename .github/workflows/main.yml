@@ -30,10 +30,11 @@ jobs:
           # Se hai creato anche news_monitor.py, scommenta la riga sotto
           # python news_monitor.py 
           
-      - name: 🚀 Push Results
+      - name: 🚀 Salva i Risultati
         run: |
-          git config --local user.email "bot@github.com"
-          git config --local user.name "Intelligence-Bot"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git pull origin main # Scarica eventuali modifiche fatte nel frattempo
           git add .
-          git commit -m "New intel update" || exit 0
+          git commit -m "Update Intelligence Report" || exit 0
           git push
