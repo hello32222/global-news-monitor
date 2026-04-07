@@ -1,4 +1,4 @@
-feedparser
-pandas
+numpy
 openai-whisper
-setuptools
+websockets
+wave
