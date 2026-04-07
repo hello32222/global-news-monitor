@@ -1,4 +1,5 @@
-numpy
+feedparser
+pandas
 openai-whisper
-websockets
-wave
+requests
+numpy
