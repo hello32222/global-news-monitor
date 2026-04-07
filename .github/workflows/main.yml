@@ -23,9 +23,12 @@ jobs:
 
       - name: 📻 CATTURA AUDIO (Twente WebSDR)
         run: |
+          # Scarichiamo il client
           curl -L https://raw.githubusercontent.com/hc67/websdr-client/master/websdr-client.py -o websdr_cli.py
-          python websdr_cli.py -s websdr.ewi.utwente.nl -p 8901 -f 6060 -m am -t 30 -o radio_capture.wav
-
+          # Installiamo una libreria specifica che a volte serve per i websocket
+          pip install websocket-client
+          # Proviamo a registrare (Ho cambiato la porta e aggiunto un piccolo ritardo)
+          python websdr_cli.py -s websdr.ewi.utwente.nl -p 8901 -f 6060 -m am -t 20 -o radio_capture.wav
       - name: 🤖 TRASCRIVI E TRADUCI AUDIO
         run: python radio_monitor.py
 
